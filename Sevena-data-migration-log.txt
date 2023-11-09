@@ -1,0 +1,6 @@
+                SEVENA-DATA-LOG                  
+*************************************************
+Process start: 2023-11-09 16:39:10
+Process end: 2023-11-09 16:39:11
+Total time: 0:00:00.889496
+Total Record: 10
