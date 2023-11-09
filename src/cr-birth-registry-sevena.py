@@ -1,3 +1,5 @@
+import boto3
+import argparse
 from datetime import datetime, date
 
 import psycopg2
@@ -13,14 +15,29 @@ class DateTimeEncoder(json.JSONEncoder):
         return super().default(obj)
 
 
+parser = argparse.ArgumentParser(description='Database configuration for data migration.')
+
+parser.add_argument('--host', type=str, required=True, help='Database host')
+parser.add_argument('--database', type=str, required=True, help='Database name')
+parser.add_argument('--user', type=str, required=True, help='Database user')
+parser.add_argument('--password', type=str, required=True, help='Database password')
+
+args = parser.parse_args()
+
 conn = psycopg2.connect(
-    host="localhost",
-    database="IKM-Dump",
-    user="postgres",
-    password="1234"
+    host=args.host,
+    database=args.database,
+    user=args.user,
+    password=args.password
 )
 
-batch_size = 1000
+# Your AWS credentials and S3 bucket details
+aws_access_key = 'your_access_key'
+aws_secret_key = 'your_secret_key'
+bucket_name = 'your_bucket_name'
+
+# Create an S3 client
+s3 = boto3.client('s3', aws_access_key_id=aws_access_key, aws_secret_access_key=aws_secret_key)
 
 cursor = conn.cursor()
 query_dict = {
@@ -45,7 +62,8 @@ result_dict = {str(row[0]): row[1].strip() for row in rows}
 print(result_dict)
 tot_count = 0
 for master_lbid in result_dict:
-    folder_name = "DATA/KL-birth-registry/" + result_dict[master_lbid]
+    # folder_name = "DATA/KL-birth-registry/" + result_dict[master_lbid]
+    folder_name = "C:/Users/mohammedasif/Downloads/ksm-cr-migration/DATA/KL-birth-registry/" + result_dict[master_lbid]
 
     # Check if the folder doesn't already exist
     if not os.path.exists(folder_name):
@@ -92,6 +110,7 @@ for master_lbid in result_dict:
         lb.office_code As lbId,
         lb.englbname AS lbName,
         lb.lbname AS lbNameInLc,
+        lb.office_type_id AS lbTypeid,
         lb.englbtype AS lbtypeEng,
         lb.lbtype AS lbTypeMal,
         -- BIRTH PLACE HOME completed 12102023
@@ -470,7 +489,7 @@ for master_lbid in result_dict:
          genderEng,
          genderMal, lastName, lastNameInLcl, middleName, middleNameInLcl, placeOfBirthId, placeOfBirthNameEng,
          placeOfBirthNameMal,
-         childNameNotProvided, aadharNo, districtIdD, distEngName, distMalName, lbId, lbName, lbNameInLc,
+         childNameNotProvided, aadharNo, districtIdD, distEngName, distMalName, lbId, lbName, lbNameInLc, lbTypeid,
          lbtypeEng, lbTypeMal, birthPlaceHome_enghouse, birthPlaceHome_malayalam_name, localityName,
          localityNameLcl,
          pincode,
@@ -534,7 +553,6 @@ for master_lbid in result_dict:
          premaAddOutKlhouseNoNameInLcl, premaAddOutKllocalityName, premaAddOutKllocalityNameInLcl, premaAddOutKlpinCode,
          premaAddOutKlpostOfficeName, premaAddOutKlstreetName, premaAddOutKlstreetNameInLcl, premaAddOutKltehsilName,
          premaAddOutKltownOrVillage, premaAddOutKlvillageName,
-
 
          pstAddOutKldistrictid, pstAddOutKlname, pstAddOutKlnameInLcl,
          pstAddOutKlhouseNoName, pstAddOutKlhouseNoNameInLcl, pstAddOutKllocalityName, pstAddOutKllocalityNameInLcl,
@@ -603,7 +621,7 @@ for master_lbid in result_dict:
                     "nameInLcl": lbNameInLc
                 },
                 "lbType": {
-                    "id": "",
+                    "id": lbTypeid,
                     "name": lbtypeEng,
                     "nameInLcl": lbTypeMal
                 },
@@ -1015,4 +1033,3 @@ for master_lbid in result_dict:
 # Close the database connection
 cursor.close()
 conn.close()
-
