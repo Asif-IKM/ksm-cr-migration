@@ -4,8 +4,6 @@ import psycopg2
 import json
 import os
 
-current_datetime = datetime.now()
-
 
 # Define a custom JSON encoder to handle datetime objects
 class DateTimeEncoder(json.JSONEncoder):
@@ -1017,24 +1015,4 @@ for master_lbid in result_dict:
 # Close the database connection
 cursor.close()
 conn.close()
-another_datetime = datetime.now()
 
-# Create a string representation of the datetimes
-current_datetime_str = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
-another_datetime_str = another_datetime.strftime("%Y-%m-%d %H:%M:%S")
-
-# Calculate the time difference
-time_difference = another_datetime - current_datetime
-
-file_path = "Sevena-data-migration-log.txt"
-
-# Open the file in write mode ('w')
-with open(file_path, 'w') as file:
-    # Write data to the file
-    file.write("                SEVENA-DATA-LOG                  " + "\n")
-    file.write("*************************************************" + "\n")
-
-    file.write("Process start: " + current_datetime_str + "\n")
-    file.write("Process end: " + another_datetime_str + "\n")
-    file.write("Total time: " + str(time_difference) + "\n")
-    file.write("Total Record: " + str(tot_count) + "\n")
