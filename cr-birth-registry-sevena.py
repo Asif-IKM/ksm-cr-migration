@@ -449,7 +449,7 @@ for master_lbid in result_dict:
 
     WHERE
         chvregnno IS NOT NULL
-         AND mh.LBid = {master_lbid} LIMIT 10;
+         AND mh.LBid = {master_lbid};
 
     """
     cursor.execute(query1)
@@ -1001,14 +1001,14 @@ for master_lbid in result_dict:
         # Write the result dictionary to a JSON file, using the custom date_handler
         with open(output_file, "w", encoding="utf-8") as json_file:
             json.dump(result, json_file, default=date_handler, indent=4, ensure_ascii=False)
-        query_flag = f""" 
-        UPDATE crtemp.tbirthrep_unicode SET flag=1 WHERE chvackno= '{certificateNumber}';
-        """
-        print(query_flag)
-
-        cursor_flag = conn.cursor()
-        cursor_flag.execute(query_flag)
-        conn.commit()
+        # query_flag = f"""
+        # UPDATE crtemp.tbirthrep_unicode SET flag=1 WHERE chvackno= '{certificateNumber}';
+        # """
+        # print(query_flag)
+        #
+        # cursor_flag = conn.cursor()
+        # cursor_flag.execute(query_flag)
+        # conn.commit()
 
         temp_count += 1
     tot_count += temp_count
