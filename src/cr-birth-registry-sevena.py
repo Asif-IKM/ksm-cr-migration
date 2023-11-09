@@ -1,3 +1,4 @@
+import boto3
 import argparse
 from datetime import datetime, date
 
@@ -30,7 +31,13 @@ conn = psycopg2.connect(
     password=args.password
 )
 
-batch_size = 1000
+# Your AWS credentials and S3 bucket details
+aws_access_key = 'your_access_key'
+aws_secret_key = 'your_secret_key'
+bucket_name = 'your_bucket_name'
+
+# Create an S3 client
+s3 = boto3.client('s3', aws_access_key_id=aws_access_key, aws_secret_access_key=aws_secret_key)
 
 cursor = conn.cursor()
 query_dict = {
@@ -482,7 +489,7 @@ for master_lbid in result_dict:
          genderEng,
          genderMal, lastName, lastNameInLcl, middleName, middleNameInLcl, placeOfBirthId, placeOfBirthNameEng,
          placeOfBirthNameMal,
-         childNameNotProvided, aadharNo, districtIdD, distEngName, distMalName, lbId, lbName, lbNameInLc,lbTypeid,
+         childNameNotProvided, aadharNo, districtIdD, distEngName, distMalName, lbId, lbName, lbNameInLc, lbTypeid,
          lbtypeEng, lbTypeMal, birthPlaceHome_enghouse, birthPlaceHome_malayalam_name, localityName,
          localityNameLcl,
          pincode,
@@ -546,7 +553,6 @@ for master_lbid in result_dict:
          premaAddOutKlhouseNoNameInLcl, premaAddOutKllocalityName, premaAddOutKllocalityNameInLcl, premaAddOutKlpinCode,
          premaAddOutKlpostOfficeName, premaAddOutKlstreetName, premaAddOutKlstreetNameInLcl, premaAddOutKltehsilName,
          premaAddOutKltownOrVillage, premaAddOutKlvillageName,
-
 
          pstAddOutKldistrictid, pstAddOutKlname, pstAddOutKlnameInLcl,
          pstAddOutKlhouseNoName, pstAddOutKlhouseNoNameInLcl, pstAddOutKllocalityName, pstAddOutKllocalityNameInLcl,
@@ -1027,4 +1033,3 @@ for master_lbid in result_dict:
 # Close the database connection
 cursor.close()
 conn.close()
-
