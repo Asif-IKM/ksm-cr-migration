@@ -62,7 +62,6 @@ result_dict = {str(row[0]): row[1].strip() for row in rows}
 print(result_dict)
 tot_count = 0
 for master_lbid in result_dict:
-    # folder_name = "DATA/KL-birth-registry/" + result_dict[master_lbid]
     folder_name = "C:/Users/mohammedasif/Downloads/ksm-cr-migration/DATA/KL-birth-registry/" + result_dict[master_lbid]
 
     # Check if the folder doesn't already exist
@@ -1017,6 +1016,11 @@ for master_lbid in result_dict:
         # Write the result dictionary to a JSON file, using the custom date_handler
         with open(output_file, "w", encoding="utf-8") as json_file:
             json.dump(result, json_file, default=date_handler, indent=4, ensure_ascii=False)
+
+        s3_key = f"{result_dict[master_lbid]}/{certificateNumber}.json"
+        with open(output_file, "rb") as data:
+            s3.upload_fileobj(data, bucket_name, s3_key)
+
         # query_flag = f"""
         # UPDATE crtemp.tbirthrep_unicode SET flag=1 WHERE chvackno= '{certificateNumber}';
         # """
